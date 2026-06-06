@@ -79,6 +79,7 @@ HAM_in_DL/
 
 ```text
 data/raw/
+├── _downloads/          # 课程发放的原始压缩包（git 已忽略）
 ├── train/
 ├── val/
 ├── test/
@@ -86,6 +87,12 @@ data/raw/
 ```
 
 如果课程提供的数据已经有固定 train / val / test 划分，请保持原始划分，不要用 test set 调参。
+
+本仓库已将课程提供的测试集压缩包放到：
+
+```text
+data/raw/_downloads/HAM10000_TestSet.zip
+```
 
 ## 5. Environment setup
 

@@ -12,3 +12,4 @@ opencv-python
 seaborn
 jupyter
 ipykernel
+kagglehub

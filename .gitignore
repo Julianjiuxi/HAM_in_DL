@@ -19,6 +19,7 @@ env/
 /outputs/gradcam/*
 /outputs/tables/*
 /outputs/figures/*
+/local_work/*
 
 # Keep folder placeholders
 !/data/raw/.gitkeep

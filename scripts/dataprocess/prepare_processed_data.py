@@ -38,7 +38,7 @@ def parse_args():
     parser.add_argument(
         "--mode",
         type=str,
-        default="move",
+        default="copy",
         choices=["move", "copy"],
         help="How to transfer files into processed directory.",
     )
@@ -109,8 +109,10 @@ def build_ham10000_metadata(src_kaggle_dir: Path, dst_ham_dir: Path) -> pd.DataF
 def build_testset_metadata(
     src_testset_dir: Path, dst_test_dir: Path, *, strict: bool
 ) -> tuple[pd.DataFrame, list[str]]:
-    raw_gt = src_testset_dir / "ISIC2018_Task3_Test_GroundTruth.csv"
-    df = pd.read_csv(raw_gt).copy()
+    src_gt = src_testset_dir / "ISIC2018_Task3_Test_GroundTruth.csv"
+    dst_gt = dst_test_dir / "groundtruth.csv"
+    gt_path = dst_gt if dst_gt.exists() else src_gt
+    df = pd.read_csv(gt_path).copy()
     df["label"] = df["dx"].map(lambda x: DX_TO_LABEL.get(str(x).lower()))
     if df["label"].isna().any():
         unknown = sorted(set(df.loc[df["label"].isna(), "dx"].astype(str).tolist()))
@@ -181,7 +183,9 @@ def main():
     ham_df = build_ham10000_metadata(src_kaggle_dir, dst_ham_dir)
     ham_df.to_csv(dst_ham_dir / "metadata.csv", index=False, encoding="utf-8")
 
-    test_df, missing = build_testset_metadata(src_testset_dir, dst_test_dir, strict=args.strict)
+    test_df, missing = build_testset_metadata(
+        src_testset_dir, dst_test_dir, strict=args.strict
+    )
     test_df.to_csv(dst_test_dir / "metadata.csv", index=False, encoding="utf-8")
     if missing:
         (dst_test_dir / "missing_images.txt").write_text(

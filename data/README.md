@@ -19,6 +19,12 @@ Do not commit large image datasets to the repository unless your instructor expl
 
 本仓库把“数据获取/解压/整理”为独立脚本流程，避免把网络下载逻辑塞进 `Dataset`，也避免把大文件提交到 git。
 
+最省心的方式是用统一入口脚本（推荐）：
+
+```bash
+python scripts/setup_data.py --force
+```
+
 ### Step 0: Put archives under raw/_downloads (git ignored)
 
 课程/手动下载的压缩包建议统一放在 `data/raw/_downloads/` 下（默认被 git 忽略）。例如：
@@ -50,6 +56,10 @@ data/raw/_downloads/kagglehub_ham10000_path.txt
 python scripts/datadownload/extract_archives.py --force
 ```
 
+常用选项：
+- 只解压其中一类：`--source kaggle` 或 `--source testset`
+- 缺某个压缩包时跳过而不是报错：`--skip-missing`
+
 解压后的目录默认是：
 
 ```text
@@ -69,7 +79,7 @@ data/raw/_downloads/ham10000_testset/
 将 raw/_downloads 下的“已解压数据”整理成后续训练/评估统一读取的 `data/processed/` 结构：
 
 ```bash
-python scripts/dataprocess/prepare_processed_data.py --mode move --force
+python scripts/dataprocess/prepare_processed_data.py --mode copy --force
 ```
 
 说明：
@@ -97,6 +107,12 @@ data/processed/
 - `label`（映射到 7 类：MEL/NV/BCC/AKIEC/BKL/DF/VASC）
 - `image_path`（相对 `data/processed/{ham10000|testset}` 的路径）
 
+### Step 4: Validate processed data (recommended)
+
+```bash
+python scripts/dataprocess/validate_data.py
+```
+
 ## Known issue: one missing TestSet image
 
 当前老师给的 `HAM10000_TestSet.zip` 中，`ISIC2018_Task3_Test_GroundTruth.csv` 有 1512 行，但 `ISIC2018_Task3_Test_Images/` 只有 1511 张 jpg；缺失的 `image_id` 为：
@@ -114,5 +130,5 @@ ISIC_0035068
 如需严格校验（缺一张就报错中止），使用：
 
 ```bash
-python scripts/dataprocess/prepare_processed_data.py --mode move --force --strict
+python scripts/dataprocess/prepare_processed_data.py --mode copy --force --strict
 ```

@@ -9,6 +9,13 @@ from pathlib import Path
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
+        "--source",
+        type=str,
+        default="all",
+        choices=["all", "kaggle", "testset"],
+        help="Which archives to extract.",
+    )
+    parser.add_argument(
         "--kaggle-archive",
         type=str,
         default="data/raw/_downloads/kagglehub_cache/archive.zip",
@@ -27,6 +34,11 @@ def parse_args():
         "--testset-out",
         type=str,
         default="data/raw/_downloads/ham10000_testset",
+    )
+    parser.add_argument(
+        "--skip-missing",
+        action="store_true",
+        help="Skip missing archives instead of failing.",
     )
     parser.add_argument("--force", action="store_true")
     return parser.parse_args()
@@ -55,13 +67,22 @@ def main():
     testset_out = (repo_root / args.testset_out).resolve()
 
     print("Extracting:")
-    print(" - Kaggle archive:", kaggle_archive)
-    print("   to:", kaggle_out)
-    extract_zip(kaggle_archive, kaggle_out, force=args.force)
 
-    print(" - TestSet zip:", testset_zip)
-    print("   to:", testset_out)
-    extract_zip(testset_zip, testset_out, force=args.force)
+    def maybe_extract(name: str, zip_path: Path, out_dir: Path) -> None:
+        if not zip_path.exists():
+            if args.skip_missing:
+                print(f" - {name}: missing, skipped:", zip_path)
+                return
+            raise FileNotFoundError(str(zip_path))
+        print(f" - {name}:", zip_path)
+        print("   to:", out_dir)
+        extract_zip(zip_path, out_dir, force=args.force)
+
+    if args.source in {"all", "kaggle"}:
+        maybe_extract("Kaggle archive", kaggle_archive, kaggle_out)
+
+    if args.source in {"all", "testset"}:
+        maybe_extract("TestSet zip", testset_zip, testset_out)
 
     print("Done.")
 

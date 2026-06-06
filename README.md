@@ -94,6 +94,8 @@ data/raw/
 data/raw/_downloads/HAM10000_TestSet.zip
 ```
 
+数据准备的详细说明见 [data/README.md](file:///d:/%E6%A1%8C%E9%9D%A2/HAM_in_DL/data/README.md)。
+
 ## 5. Environment setup
 
 ```bash
@@ -104,10 +106,12 @@ pip install -r requirements.txt
 
 ## 6. Common commands
 
-### 6.1 Create or check data splits
+### 6.1 Data setup quickstart
 
 ```bash
-python scripts/make_splits.py --config configs/baseline_cnn.yaml
+# 1) Put archives under data/raw/_downloads/
+# 2) Extract + prepare processed + validate
+python scripts/setup_data.py --force
 ```
 
 ### 6.2 Train baseline CNN
@@ -131,7 +135,7 @@ python scripts/evaluate.py --config configs/resnet18.yaml --checkpoint checkpoin
 ### 6.5 Run Grad-CAM
 
 ```bash
-python scripts/run_gradcam.py --config configs/resnet18.yaml --checkpoint checkpoints/best_resnet18.pt --image-path data/raw/test/example.jpg
+python scripts/run_gradcam.py --config configs/resnet18.yaml --checkpoint checkpoints/best_resnet18.pt --image-path data/processed/testset/images/example.jpg
 ```
 
 ### 6.6 Analyze errors

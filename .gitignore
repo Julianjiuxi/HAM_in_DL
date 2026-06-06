@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Data and model artifacts
+/data/raw/*
+/data/processed/*
+/checkpoints/*
+/outputs/predictions/*
+/outputs/gradcam/*
+/outputs/tables/*
+/outputs/figures/*
+
+# Keep folder placeholders
+!/data/raw/.gitkeep
+!/data/processed/.gitkeep
+!/checkpoints/.gitkeep
+!/outputs/predictions/.gitkeep
+!/outputs/gradcam/.gitkeep
+!/outputs/tables/.gitkeep
+!/outputs/figures/.gitkeep
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/

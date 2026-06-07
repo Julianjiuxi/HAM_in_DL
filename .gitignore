@@ -20,6 +20,8 @@ env/
 /outputs/tables/*
 /outputs/figures/*
 /local_work/*
+*.pt
+*.pth
 
 # Keep folder placeholders
 !/data/raw/.gitkeep
@@ -29,6 +31,12 @@ env/
 !/outputs/gradcam/.gitkeep
 !/outputs/tables/.gitkeep
 !/outputs/figures/.gitkeep
+
+# Allow split reproducibility files
+!/data/splits/
+!/data/splits/.gitkeep
+!/data/splits/*.csv
+!/data/splits/*.json
 
 # Notebooks
 .ipynb_checkpoints/

@@ -1,33 +1,31 @@
-project:
-  name: HAM_in_DL
-  seed: 42
+# Baseline CNN configuration
+model: baseline_cnn
+seed: 42
 
 data:
-  root_dir: data/raw
-  train_dir: data/raw/train
-  val_dir: data/raw/val
-  test_dir: data/raw/test
-  metadata_csv: data/raw/metadata.csv
+  dataset: ham10000
   image_size: 224
-  num_workers: 4
-
-model:
-  name: baseline_cnn
-  num_classes: 7
-  pretrained: false
+  metadata_csv: data/processed/ham10000/metadata.csv
+  image_dir: data/processed/ham10000
+  split_dir: data/splits
+  train_csv: data/splits/train.csv
+  val_csv: data/splits/val.csv
+  test_csv: data/processed/testset/metadata.csv
+  test_image_dir: data/processed/testset
 
 training:
-  epochs: 30
   batch_size: 32
-  learning_rate: 0.001
+  epochs: 30
+  lr: 0.001
   weight_decay: 0.0001
-  optimizer: adam
-  loss: cross_entropy
-  use_class_weights: true
-  early_stopping_patience: 8
+  early_stopping_patience: 10
+  num_workers: 0
+  class_weights: true
 
-outputs:
-  checkpoint_dir: checkpoints
-  figure_dir: outputs/figures
-  table_dir: outputs/tables
-  prediction_dir: outputs/predictions
+checkpoint:
+  dir: checkpoints
+
+output:
+  dir: outputs
+  history_csv: outputs/history_baseline.csv
+  predictions_csv: outputs/predictions_baseline.csv

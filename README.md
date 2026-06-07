@@ -94,7 +94,7 @@ data/raw/
 data/raw/_downloads/HAM10000_TestSet.zip
 ```
 
-数据准备的详细说明见 [data/README.md](file:///d:/%E6%A1%8C%E9%9D%A2/HAM_in_DL/data/README.md)。
+数据准备的详细说明见 [data/README.md](data/README.md)。
 
 ## 5. Environment setup
 
@@ -104,44 +104,76 @@ source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## 6. Common commands
+## 6. Reproducible pipeline
 
-### 6.1 Data setup quickstart
+Run commands from the repository root.
 
 ```bash
-# 1) Put archives under data/raw/_downloads/
-# 2) Extract + prepare processed + validate
+pip install -r requirements.txt
+```
+
+### 6.1 Data setup
+
+Download the HAM10000 Kaggle mirror with `kagglehub`, then place the provided course TestSet zip under `data/raw/_downloads/`:
+
+```bash
+python scripts/datadownload/download_ham10000_kagglehub.py
+mkdir -p data/raw/_downloads
+# put the provided TestSet zip at:
+# data/raw/_downloads/HAM10000_TestSet.zip
+```
+
+Then extract and prepare the processed dataset:
+
+```bash
 python scripts/setup_data.py --force
+python scripts/make_splits.py --config configs/resnet18.yaml --force
 ```
 
-### 6.2 Train baseline CNN
+The train/validation split is created only from `data/processed/ham10000/metadata.csv`. The external test set stays separate at `data/processed/testset/metadata.csv` and must only be used for final evaluation.
 
-```bash
-python scripts/train_baseline.py --config configs/baseline_cnn.yaml
-```
+### 6.2 Train models
 
-### 6.3 Train transfer learning model
+Train the transfer learning model:
 
 ```bash
 python scripts/train_transfer.py --config configs/resnet18.yaml
 ```
 
-### 6.4 Evaluate model
+Evaluate ResNet18:
 
 ```bash
+python scripts/evaluate.py --config configs/resnet18.yaml --checkpoint checkpoints/best_resnet18.pt --split val
 python scripts/evaluate.py --config configs/resnet18.yaml --checkpoint checkpoints/best_resnet18.pt --split test
 ```
 
-### 6.5 Run Grad-CAM
+Train and evaluate the baseline CNN:
 
 ```bash
-python scripts/run_gradcam.py --config configs/resnet18.yaml --checkpoint checkpoints/best_resnet18.pt --image-path data/processed/testset/images/example.jpg
+python scripts/train_baseline.py --config configs/baseline_cnn.yaml
+python scripts/evaluate.py --config configs/baseline_cnn.yaml --checkpoint checkpoints/best_baseline_cnn.pt --split test
 ```
 
-### 6.6 Analyze errors
+### 6.3 Interpretation and error analysis
 
 ```bash
-python scripts/analyze_errors.py --predictions outputs/predictions/test_predictions.csv
+python scripts/analyze_errors.py --predictions outputs/predictions/test_resnet18_predictions.csv
+python scripts/run_gradcam.py --config configs/resnet18.yaml --checkpoint checkpoints/best_resnet18.pt --image-path <path_to_image>
+```
+
+### 6.4 Generated outputs
+
+Training and evaluation create local files under ignored directories:
+
+```text
+checkpoints/best_resnet18.pt
+checkpoints/best_baseline_cnn.pt
+outputs/tables/*_metrics.json
+outputs/tables/*_classification_report.csv
+outputs/tables/*_confusion_matrix.csv
+outputs/figures/*_confusion_matrix.png
+outputs/predictions/*_predictions.csv
+outputs/gradcam/*_gradcam.png
 ```
 
 ## 7. Branch and commit conventions
@@ -203,6 +235,7 @@ git checkout -b feature/data-loader
 - [ ] `ai_dialogue_records/` 中包含 AI 使用记录，如果使用了 AI 工具
 - [ ] validation 和 test performance 均已报告
 - [ ] test set 没有被用于模型选择或调参
+- [ ] 不要把 image datasets、`outputs/` 或 `checkpoints/` 提交到 GitHub
 
 ## 11. Academic integrity note
 

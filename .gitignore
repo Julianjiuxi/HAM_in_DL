@@ -14,20 +14,30 @@ env/
 # Data and model artifacts
 /data/raw/*
 /data/processed/*
+/data/splits/*
 /checkpoints/*
+/outputs/*
 /outputs/predictions/*
 /outputs/gradcam/*
 /outputs/tables/*
 /outputs/figures/*
 /local_work/*
+*.pt
+*.pth
 
 # Keep folder placeholders
 !/data/raw/.gitkeep
 !/data/processed/.gitkeep
+!/data/splits/.gitkeep
 !/checkpoints/.gitkeep
+!/outputs/
+!/outputs/predictions/
 !/outputs/predictions/.gitkeep
+!/outputs/gradcam/
 !/outputs/gradcam/.gitkeep
+!/outputs/tables/
 !/outputs/tables/.gitkeep
+!/outputs/figures/
 !/outputs/figures/.gitkeep
 
 # Notebooks

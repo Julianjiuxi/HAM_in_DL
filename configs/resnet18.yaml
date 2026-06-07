@@ -3,11 +3,15 @@ project:
   seed: 42
 
 data:
-  root_dir: data/raw
-  train_dir: data/raw/train
-  val_dir: data/raw/val
-  test_dir: data/raw/test
-  metadata_csv: data/raw/metadata.csv
+  processed_root: data/processed
+  ham10000_root: data/processed/ham10000
+  ham10000_metadata_csv: data/processed/ham10000/metadata.csv
+  testset_root: data/processed/testset
+  test_csv: data/processed/testset/metadata.csv
+  split_dir: data/processed/splits
+  train_csv: data/processed/splits/train.csv
+  val_csv: data/processed/splits/val.csv
+  val_size: 0.2
   image_size: 224
   num_workers: 4
 

@@ -20,8 +20,8 @@ def test_baseline_cnn_output_shape():
     assert out.shape == (2, NUM_CLASSES)
 
 
-def test_resnet18_output_shape():
-    model = build_model("resnet18", num_classes=NUM_CLASSES)
+def test_resnet18_no_pretrained_output_shape():
+    model = build_model("resnet18", num_classes=NUM_CLASSES, pretrained=False)
     dummy = torch.randn(2, 3, 224, 224)
     out = model(dummy)
     assert out.shape == (2, NUM_CLASSES)

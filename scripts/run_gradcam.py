@@ -51,7 +51,11 @@ def main() -> None:
     model = model.to(device)
     model.eval()
 
-    target_layer = model.backbone.layer4[-1]
+    # Resolve target layer by model architecture
+    if config["model"] == "convnext_tiny":
+        target_layer = model.features[-1]
+    else:
+        target_layer = model.layer4[-1]
     transform = build_eval_transforms(config["data"]["image_size"])
 
     predictions = pd.read_csv(args.predictions_csv)

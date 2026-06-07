@@ -19,7 +19,11 @@ env/
 /outputs/gradcam/*
 /outputs/tables/*
 /outputs/figures/*
+/outputs/error_analysis/*
 /local_work/*
+/outputs/*.csv
+/outputs/*.json
+/outputs/*.png
 *.pt
 *.pth
 

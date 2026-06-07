@@ -112,7 +112,12 @@ pip install -r requirements.txt
 # 1) Put archives under data/raw/_downloads/
 # 2) Extract + prepare processed + validate
 python scripts/setup_data.py --force
+
+# 3) Generate lesion-level train/val splits (no leakage)
+python scripts/make_splits.py --config configs/resnet18.yaml --force
 ```
+
+Split 按 `lesion_id` 分组，确保同一病灶的所有图片不会同时出现在 train 和 val 中。
 
 ### 6.2 Train baseline CNN
 
@@ -126,22 +131,30 @@ python scripts/train_baseline.py --config configs/baseline_cnn.yaml
 python scripts/train_transfer.py --config configs/resnet18.yaml
 ```
 
-### 6.4 Evaluate model
+### 6.4 Evaluate model (validation set)
 
 ```bash
-python scripts/evaluate.py --config configs/resnet18.yaml --checkpoint checkpoints/best_resnet18.pt --split test
+python scripts/evaluate.py --config configs/resnet18.yaml --split val
 ```
 
-### 6.5 Run Grad-CAM
+### 6.5 Evaluate model (final test set — report only)
 
 ```bash
-python scripts/run_gradcam.py --config configs/resnet18.yaml --checkpoint checkpoints/best_resnet18.pt --image-path data/processed/testset/images/example.jpg
+python scripts/evaluate.py --config configs/resnet18.yaml --split test
 ```
 
-### 6.6 Analyze errors
+### 6.6 Run Grad-CAM
 
 ```bash
-python scripts/analyze_errors.py --predictions outputs/predictions/test_predictions.csv
+python scripts/run_gradcam.py --config configs/resnet18.yaml --predictions-csv outputs/predictions_resnet18.csv --case failed --num-samples 5
+```
+
+Grad-CAM 依赖 `evaluate.py` 已生成的 predictions CSV。
+
+### 6.7 Analyze errors
+
+```bash
+python scripts/analyze_errors.py --predictions outputs/predictions_resnet18.csv
 ```
 
 ## 7. Branch and commit conventions

@@ -107,7 +107,28 @@ data/processed/
 - `label`（映射到 7 类：MEL/NV/BCC/AKIEC/BKL/DF/VASC）
 - `image_path`（相对 `data/processed/{ham10000|testset}` 的路径）
 
-### Step 4: Validate processed data (recommended)
+### Step 4: Generate train/val splits (lesion-level group split)
+
+```bash
+python scripts/make_splits.py --config configs/resnet18.yaml --force
+```
+
+输出到 `data/splits/`：
+
+```text
+data/splits/
+├── train.csv       # 训练样本列表（含 image_id, label, label_idx, image_path, lesion_id）
+└── val.csv         # 验证样本列表（同上）
+```
+
+Split 逻辑：
+- 按 `lesion_id` 分组：同一病灶的图片全部进入同一 split，消除 train/val 之间的 lesion-level leakage
+- 对每个 lesion 的多数标签做 `stratify`，保证类别分布在两个 split 中相对均衡
+- 外部 TestSet（`data/processed/testset/metadata.csv`）从不参与 split 生成，仅用于最终报告
+
+`data/splits/*.csv` 体积很小、可进 git，便于全组使用同一份 train/val 划分。
+
+### Step 5: Validate processed data + splits
 
 ```bash
 python scripts/dataprocess/validate_data.py

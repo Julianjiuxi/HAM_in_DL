@@ -30,6 +30,15 @@ SOURCES = {
 }
 
 
+def stage_kaggle_archive(zip_path: Path) -> None:
+    fallback = REPO_ROOT / "archive.zip"
+    if zip_path.exists() or not fallback.exists():
+        return
+    zip_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(str(fallback), str(zip_path))
+    print(f"  moved {fallback} -> {zip_path}")
+
+
 def normalise_kagglehub_download(src_dir: Path, target_dir: Path) -> None:
     """Flatten kagglehub download output so all images are in one place."""
     target_dir.mkdir(parents=True, exist_ok=True)
@@ -87,6 +96,8 @@ def main() -> None:
         zip_path = SOURCES["kaggle"]["zip"]
         download_dir = SOURCES["kaggle"]["dir"]
         target = SOURCES["kaggle"]["target"]
+
+        stage_kaggle_archive(zip_path)
 
         if zip_path and zip_path.exists():
             extract_zip(zip_path, target, force=args.force)

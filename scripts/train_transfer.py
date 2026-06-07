@@ -106,8 +106,9 @@ def main() -> None:
     criterion = build_loss("cross_entropy", class_weights=class_weights)
     optimizer = build_optimizer(model, config)
 
+    model_name = config["model"]
     checkpoint_path = (
-        Path(config["checkpoint"]["dir"]) / f"resnet18_{config['seed']}.pt"
+        Path(config["checkpoint"]["dir"]) / f"{model_name}_{config['seed']}.pt"
     )
     history, best_metric = fit(
         model,

@@ -12,7 +12,7 @@ SRC = Path(__file__).resolve().parents[1] / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from ham_in_dl.constants import CLASS_NAMES, INDEX_TO_LABEL, NUM_CLASSES
+from ham_in_dl.constants import CLASS_NAMES, NUM_CLASSES
 from ham_in_dl.data.dataset import build_dataloader, build_dataset_from_csv
 from ham_in_dl.data.split import create_splits
 from ham_in_dl.evaluation.evaluate import predict

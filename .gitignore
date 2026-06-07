@@ -33,6 +33,10 @@ env/
 # Notebooks
 .ipynb_checkpoints/
 
+# Team member archives (not part of this repo)
+/HAM_in_DL 2.zip
+/HAM_in_DL 2/
+
 # OS / IDE
 .DS_Store
 .vscode/

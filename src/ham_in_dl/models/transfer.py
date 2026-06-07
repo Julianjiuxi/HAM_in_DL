@@ -10,8 +10,10 @@ def build_resnet18(num_classes: int = 7, pretrained: bool = True, freeze_backbon
     model = models.resnet18(weights=weights)
 
     if freeze_backbone:
-        for param in model.parameters():
-            param.requires_grad = False
+        # Freeze only backbone layers, keeping the classifier head trainable
+        for name, param in model.named_parameters():
+            if "fc" not in name:
+                param.requires_grad = False
 
     in_features = model.fc.in_features
     model.fc = nn.Linear(in_features, num_classes)
@@ -24,7 +26,8 @@ def build_convnext_tiny(num_classes: int = 7, pretrained: bool = True, freeze_ba
     model = models.convnext_tiny(weights=weights)
 
     if freeze_backbone:
-        for param in model.parameters():
+        # Freeze only backbone (features), keeping the classifier head trainable
+        for param in model.features.parameters():
             param.requires_grad = False
 
     # ConvNeXt classifier head is a Sequential: [LayerNorm2d, Flatten, Linear]

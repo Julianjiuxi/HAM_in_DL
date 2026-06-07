@@ -41,7 +41,11 @@ def main() -> None:
     set_seed(config["seed"])
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = build_model(config["model"], num_classes=NUM_CLASSES)
+    model = build_model(
+        config["model"],
+        num_classes=NUM_CLASSES,
+        pretrained=False,  # load from checkpoint, not pretrained weights
+    )
     checkpoint_path = (
         Path(config["checkpoint"]["dir"])
         / f"{config['model']}_{config['seed']}.pt"
@@ -52,10 +56,16 @@ def main() -> None:
     model.eval()
 
     # Resolve target layer by model architecture
-    if config["model"] == "convnext_tiny":
+    model_name = config["model"]
+    if model_name == "convnext_tiny":
         target_layer = model.features[-1]
+    elif model_name in ("resnet18", "resnet_18", "baseline_cnn"):
+        target_layer = model.layer4[-1] if hasattr(model, "layer4") else model.conv3[-1]
     else:
-        target_layer = model.layer4[-1]
+        raise ValueError(
+            f"Unsupported model for Grad-CAM: {model_name}. "
+            "Supported: resnet18, convnext_tiny, baseline_cnn"
+        )
     transform = build_eval_transforms(config["data"]["image_size"])
 
     predictions = pd.read_csv(args.predictions_csv)

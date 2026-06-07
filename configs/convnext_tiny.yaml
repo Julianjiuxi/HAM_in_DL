@@ -2,6 +2,10 @@
 model: convnext_tiny
 seed: 42
 
+# Model-specific options
+pretrained: true
+freeze_backbone: false
+
 data:
   dataset: ham10000
   image_size: 224

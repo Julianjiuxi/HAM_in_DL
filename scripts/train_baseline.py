@@ -81,7 +81,12 @@ def main() -> None:
         num_workers=config["training"].get("num_workers", 0),
     )
 
-    model = build_model(config["model"], num_classes=NUM_CLASSES)
+    model = build_model(
+        config["model"],
+        num_classes=NUM_CLASSES,
+        pretrained=config.get("pretrained", True),
+        freeze_backbone=config.get("freeze_backbone", False),
+    )
     model = model.to(device)
 
     # Compute class weights from training split

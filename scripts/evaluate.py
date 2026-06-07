@@ -94,7 +94,12 @@ def main() -> None:
         num_workers=config["training"].get("num_workers", 0),
     )
 
-    model = build_model(config["model"], num_classes=NUM_CLASSES)
+    model = build_model(
+        config["model"],
+        num_classes=NUM_CLASSES,
+        pretrained=config.get("pretrained", True),
+        freeze_backbone=False,  # evaluate always loads from checkpoint
+    )
     checkpoint_path = (
         Path(config["checkpoint"]["dir"])
         / f"{config['model']}_{config['seed']}.pt"

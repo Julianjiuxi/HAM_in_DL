@@ -55,12 +55,21 @@ def main() -> None:
     model = model.to(device)
     model.eval()
 
+    # Disable inplace ReLU to avoid view/inplace conflicts with Grad-CAM hooks
+    for m in model.modules():
+        if isinstance(m, torch.nn.ReLU):
+            m.inplace = False
+
     # Resolve target layer by model architecture
     model_name = config["model"]
-    if model_name == "convnext_tiny":
-        target_layer = model.features[-1]
-    elif model_name in ("resnet18", "resnet_18", "baseline_cnn"):
-        target_layer = model.layer4[-1] if hasattr(model, "layer4") else model.conv3[-1]
+    if model_name in ("convnext_tiny", "convnext-tiny"):
+        # ConvNeXt: hook into last depthwise conv inside the final CNBlock
+        target_layer = model.features[-1][-1].block[5]
+    elif model_name in ("resnet18", "resnet_18"):
+        target_layer = model.layer4[-1]
+    elif model_name == "baseline_cnn":
+        # BaselineCNN: third and final conv layer in self.features (index 6)
+        target_layer = model.features[6]
     else:
         raise ValueError(
             f"Unsupported model for Grad-CAM: {model_name}. "

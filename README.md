@@ -2,7 +2,7 @@
 
 Skin Lesion Classification Using Deep Learning — HAM10000 / ISIC 2018 Task 3 group project scaffold.
 
-本仓库是课程项目的基础架构，用于小组协作完成皮肤病灶图像 7 分类任务。项目目标是用 PyTorch 完成完整深度学习流程：数据处理、baseline CNN、迁移学习模型、训练、验证、测试、指标分析、Grad-CAM 可解释性、错误案例分析和最终报告。
+本仓库是课程项目"皮肤病灶图像 7 分类"的完整实现，使用 PyTorch 完成了: 数据预处理、lesion-level 划分、Baseline CNN 训练、ResNet18 / ConvNeXt-Tiny 迁移学习训练、验证评估、测试评估、Grad-CAM 可解释性可视化和错误案例分析。
 
 ## 1. Project goals
 
@@ -42,7 +42,8 @@ HAM_in_DL/
 ├── .gitignore
 ├── configs/
 │   ├── baseline_cnn.yaml
-│   └── resnet18.yaml
+│   ├── resnet18.yaml
+│   └── convnext_tiny.yaml
 ├── data/
 │   ├── README.md
 │   ├── raw/
@@ -60,12 +61,10 @@ HAM_in_DL/
 │       ├── interpretation/
 │       └── utils/
 ├── scripts/
-├── notebooks/
 ├── outputs/
-│   ├── figures/
-│   ├── tables/
-│   ├── gradcam/
-│   └── predictions/
+│   ├── figures/           # experiment summary figures
+│   ├── gradcam/           # Grad-CAM heatmaps
+│   └── error_analysis/    # error case CSVs
 ├── checkpoints/
 ├── report/
 ├── docs/
@@ -75,26 +74,31 @@ HAM_in_DL/
 
 ## 4. Dataset placement
 
-不要把大体积图片数据直接上传到 GitHub。建议本地按以下方式放置：
+数据集按以下结构组织（`data/raw/` 和 `data/processed/` 不在 git 中）：
 
 ```text
-data/raw/
-├── _downloads/          # 课程发放的原始压缩包（git 已忽略）
-├── train/
-├── val/
-├── test/
-└── metadata.csv        # 如果课程数据提供了标签表，可放这里
+data/
+├── raw/
+│   └── _downloads/
+│       ├── kagglehub_cache/archive.zip   # Kaggle HAM10000 压缩包
+│       ├── ham10000_kaggle/              # 解压后（10015 张图像）
+│       └── ham10000_testset/             # 老师提供的 TestSet
+├── processed/
+│   ├── ham10000/                         # 整理后的训练数据
+│   │   ├── images/
+│   │   │   ├── HAM10000_images_part_1/
+│   │   │   └── HAM10000_images_part_2/
+│   │   └── metadata.csv
+│   └── testset/                          # 整理后的测试数据
+│       ├── images/
+│       ├── metadata.csv
+│       └── groundtruth.csv
+└── splits/
+    ├── train.csv                         # lesion-level 训练划分
+    └── val.csv                           # lesion-level 验证划分
 ```
 
-如果课程提供的数据已经有固定 train / val / test 划分，请保持原始划分，不要用 test set 调参。
-
-课程提供的测试集压缩包不要上传到 GitHub。请每位组员在本地手动放到：
-
-```text
-data/raw/_downloads/HAM10000_TestSet.zip
-```
-
-数据准备的详细说明见 [data/README.md](file:///d:/%E6%A1%8C%E9%9D%A2/HAM_in_DL/data/README.md)。
+课程提供的压缩包不要上传到 GitHub。`setup_data.py` 会自动处理 `archive.zip` 的搬运与解压。
 
 ## 5. Environment setup
 
@@ -106,56 +110,106 @@ pip install -r requirements.txt
 
 ## 6. Common commands
 
-### 6.1 Data setup quickstart
+### 6.1 Data setup
 
 ```bash
-# 1) Put archives under data/raw/_downloads/
-# 2) Extract + prepare processed + validate
+# 1) 将 archive.zip 放到仓库根目录（或手动放入 data/raw/_downloads/kagglehub_cache/）
+# 2) 一键解压 + 整理 + 校验
 python scripts/setup_data.py --force
 
-# 3) Generate lesion-level train/val splits (no leakage)
+# 3) 生成 lesion-level train/val 划分（三个模型共用）
 python scripts/make_splits.py --config configs/resnet18.yaml --force
 ```
 
 Split 按 `lesion_id` 分组，确保同一病灶的所有图片不会同时出现在 train 和 val 中。
 
-### 6.2 Train baseline CNN
+### 6.2 Train models
 
 ```bash
+# Baseline CNN（轻量，快速验证流程）
 python scripts/train_baseline.py --config configs/baseline_cnn.yaml
-```
 
-### 6.3 Train transfer learning model
-
-```bash
+# ResNet18 迁移学习
 python scripts/train_transfer.py --config configs/resnet18.yaml
+
+# ConvNeXt-Tiny 迁移学习
+python scripts/train_transfer.py --config configs/convnext_tiny.yaml
 ```
 
-### 6.4 Evaluate model (validation set)
+### 6.3 Evaluate on validation set
 
 ```bash
+python scripts/evaluate.py --config configs/baseline_cnn.yaml --split val
 python scripts/evaluate.py --config configs/resnet18.yaml --split val
+python scripts/evaluate.py --config configs/convnext_tiny.yaml --split val
 ```
 
-### 6.5 Evaluate model (final test set — report only)
+### 6.4 Evaluate on test set (final report only)
 
 ```bash
-python scripts/evaluate.py --config configs/resnet18.yaml --split test
+python scripts/evaluate.py --config configs/convnext_tiny.yaml --split test
 ```
 
-### 6.6 Run Grad-CAM
+### 6.5 Error analysis
 
 ```bash
+python scripts/analyze_errors.py --predictions outputs/predictions_convnext_tiny.csv
+```
+
+### 6.6 Grad-CAM visualization
+
+```bash
+python scripts/run_gradcam.py --config configs/baseline_cnn.yaml --predictions-csv outputs/predictions_baseline.csv --case failed --num-samples 5
 python scripts/run_gradcam.py --config configs/resnet18.yaml --predictions-csv outputs/predictions_resnet18.csv --case failed --num-samples 5
+python scripts/run_gradcam.py --config configs/convnext_tiny.yaml --predictions-csv outputs/predictions_convnext_tiny.csv --case failed --num-samples 5
 ```
 
 Grad-CAM 依赖 `evaluate.py` 已生成的 predictions CSV。
 
-### 6.7 Analyze errors
+### 6.7 One-click reproduction (full pipeline)
 
 ```bash
-python scripts/analyze_errors.py --predictions outputs/predictions_resnet18.csv
+# === 数据准备 ===
+python scripts/setup_data.py --force
+python scripts/make_splits.py --config configs/resnet18.yaml --force
+
+# === 训练 ===
+python scripts/train_baseline.py --config configs/baseline_cnn.yaml
+python scripts/train_transfer.py --config configs/resnet18.yaml
+python scripts/train_transfer.py --config configs/convnext_tiny.yaml
+
+# === Val 评估 ===
+python scripts/evaluate.py --config configs/baseline_cnn.yaml --split val
+python scripts/evaluate.py --config configs/resnet18.yaml --split val
+python scripts/evaluate.py --config configs/convnext_tiny.yaml --split val
+
+# === Test 评估 ===
+python scripts/evaluate.py --config configs/convnext_tiny.yaml --split test
+
+# === 错误分析 ===
+python scripts/analyze_errors.py --predictions outputs/predictions_convnext_tiny.csv
+
+# === Grad-CAM ===
+python scripts/run_gradcam.py --config configs/baseline_cnn.yaml --predictions-csv outputs/predictions_baseline.csv --case failed --num-samples 5
+python scripts/run_gradcam.py --config configs/resnet18.yaml --predictions-csv outputs/predictions_resnet18.csv --case failed --num-samples 5
+python scripts/run_gradcam.py --config configs/convnext_tiny.yaml --predictions-csv outputs/predictions_convnext_tiny.csv --case failed --num-samples 5
 ```
+
+### 6.8 Experiment summary visualizations
+
+```bash
+python scripts/plot_visualizations.py
+```
+
+Generates five report-quality figures in `outputs/figures/`:
+
+| Figure | Description |
+|--------|-------------|
+| `loss_curves.png` | Train & validation loss for all 3 models (side-by-side) |
+| `accuracy_curves.png` | Train & validation accuracy for all 3 models |
+| `parameter_comparison.png` | Bar chart of trainable parameter counts |
+| `per_class_f1.png` | Grouped bar chart of per-class F1 scores |
+| `overfitting_gap.png` | Train−Val Macro-F1 gap over epochs (quantifies overfitting) |
 
 ## 7. Branch and commit conventions
 
@@ -211,11 +265,17 @@ git checkout -b feature/data-loader
 
 - [ ] `report/final_report.pdf`
 - [ ] `src/` 和 `scripts/` 中的完整 PyTorch 代码
-- [ ] `checkpoints/` 中的训练权重，如果适用
-- [ ] `README.md` 可复现实验
-- [ ] `ai_dialogue_records/` 中包含 AI 使用记录，如果使用了 AI 工具
+- [ ] `configs/` 三个模型配置文件
+- [ ] `checkpoints/baseline_cnn_42.pt`（~141 MB）
+- [ ] `checkpoints/resnet18_42.pt`（~134 MB）
+- [ ] `checkpoints/convnext_tiny_42.pt`（~334 MB）
+- [ ] `outputs/` 中所有评估产物（history CSV、predictions CSV、confusion matrix、Grad-CAM 图、错误分析）
+- [ ] `data/splits/train.csv` + `val.csv`（lesion-level 划分文件）
+- [ ] `README.md` 包含完整复现命令
+- [ ] `ai_dialogue_records/` 中包含 AI 使用记录
 - [ ] validation 和 test performance 均已报告
 - [ ] test set 没有被用于模型选择或调参
+- [ ] 报告中三个模型的 Val Macro-F1 分别为 37.77%, 71.12%, 78.10%
 
 ## 11. Academic integrity note
 

@@ -1,9 +1,14 @@
 """Analyse prediction errors."""
 
 import argparse
+import sys
 from pathlib import Path
 
 import pandas as pd
+
+SRC = Path(__file__).resolve().parents[1] / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
 
 from ham_in_dl.evaluation.error_analysis import (
     most_common_confusions,

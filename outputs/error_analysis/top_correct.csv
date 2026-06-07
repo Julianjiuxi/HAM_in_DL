@@ -1,0 +1,11 @@
+image_id,dataset,image_path,true_label,pred_label,true_index,pred_index,confidence,correct
+ISIC_0035184,vidir_molemax,data/processed/testset/images/ISIC_0035184.jpg,NV,NV,1,1,0.9999890327453612,True
+ISIC_0034562,vidir_molemax,data/processed/testset/images/ISIC_0034562.jpg,NV,NV,1,1,0.9999879598617554,True
+ISIC_0035363,vidir_molemax,data/processed/testset/images/ISIC_0035363.jpg,NV,NV,1,1,0.9999876022338868,True
+ISIC_0035169,vidir_molemax,data/processed/testset/images/ISIC_0035169.jpg,NV,NV,1,1,0.999987006187439,True
+ISIC_0035325,vidir_molemax,data/processed/testset/images/ISIC_0035325.jpg,NV,NV,1,1,0.9999862909317015,True
+ISIC_0035365,vidir_molemax,data/processed/testset/images/ISIC_0035365.jpg,NV,NV,1,1,0.9999854564666748,True
+ISIC_0035165,vidir_molemax,data/processed/testset/images/ISIC_0035165.jpg,NV,NV,1,1,0.9999854564666748,True
+ISIC_0035219,vidir_molemax,data/processed/testset/images/ISIC_0035219.jpg,NV,NV,1,1,0.9999852180480956,True
+ISIC_0034646,external,data/processed/testset/images/ISIC_0034646.jpg,BKL,BKL,4,4,0.9999850988388062,True
+ISIC_0035352,vidir_molemax,data/processed/testset/images/ISIC_0035352.jpg,NV,NV,1,1,0.9999841451644896,True

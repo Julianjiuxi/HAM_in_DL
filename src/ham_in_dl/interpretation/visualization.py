@@ -11,7 +11,7 @@ from PIL import Image
 # ── Shared style constants ──────────────────────────────────────────────
 MODEL_COLORS = {"baseline_cnn": "#E74C3C", "resnet18": "#3498DB", "convnext_tiny": "#2ECC71"}
 MODEL_LABELS = {"baseline_cnn": "Baseline CNN", "resnet18": "ResNet18", "convnext_tiny": "ConvNeXt-Tiny"}
-CLASS_NAMES = ["AKIEC", "BCC", "BKL", "DF", "MEL", "NV", "VASC"]
+CLASS_NAMES = ["MEL", "NV", "BCC", "AKIEC", "BKL", "DF", "VASC"]
 
 
 def _setup_style():

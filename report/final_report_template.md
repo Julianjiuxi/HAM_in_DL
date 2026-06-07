@@ -11,7 +11,8 @@
 ## 3 实验设计与模型
 - Baseline CNN：简单卷积网络
 - 迁移学习模型：ResNet18（ImageNet 预训练）
-- 分割策略：`Stratified train/val split`（按 label），外部 test 仅在最终报告时使用
+- 迁移学习模型：ConvNeXt-Tiny（ImageNet 预训练）
+- 分割策略：`Lesion-level stratified group split`（按 lesion_id 分组，确保同一病灶不出现在 train/val 两侧）
 - 类别不平衡处理：class weights
 
 ## 4 结果与分析

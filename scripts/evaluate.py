@@ -125,20 +125,20 @@ def main() -> None:
     print(f"predictions saved to {preds_csv}")
 
     cm = confusion_matrix_dataframe(targets, preds, CLASS_NAMES)
-    cm_path = preds_csv.parent / f"{args.split}_confusion_matrix.csv"
+    cm_path = preds_csv.parent / f"{args.split}_{config['model']}_confusion_matrix.csv"
     cm.to_csv(cm_path)
     print(f"confusion matrix saved to {cm_path}")
 
-    cm_plot_path = preds_csv.parent / f"{args.split}_confusion_matrix.png"
+    cm_plot_path = preds_csv.parent / f"{args.split}_{config['model']}_confusion_matrix.png"
     plot_confusion_matrix(cm, cm_plot_path, title=f"{config['model']} Confusion Matrix ({args.split})")
     print(f"confusion matrix plot saved to {cm_plot_path}")
 
     cr = classification_report_dataframe(targets, preds, CLASS_NAMES)
-    cr_path = preds_csv.parent / f"{args.split}_classification_report.csv"
+    cr_path = preds_csv.parent / f"{args.split}_{config['model']}_classification_report.csv"
     cr.to_csv(cr_path, index=False)
     print(f"classification report saved to {cr_path}")
 
-    metrics_path = preds_csv.parent / f"{args.split}_metrics.json"
+    metrics_path = preds_csv.parent / f"{args.split}_{config['model']}_metrics.json"
     save_metrics_json(metrics, metrics_path)
     print(f"metrics saved to {metrics_path}")
 

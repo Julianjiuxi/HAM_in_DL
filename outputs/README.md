@@ -13,12 +13,12 @@ outputs/
 ├── README.md                          # 本文件
 ├── history_*.csv                      # 训练历史（epoch 级指标）
 ├── predictions_*.csv                  # 逐样本预测结果
-├── val_confusion_matrix.{csv,png}     # 验证集混淆矩阵（最后运行的模型）
-├── val_classification_report.csv      # 验证集分类报告（最后运行的模型）
-├── val_metrics.json                   # 验证集指标汇总（最后运行的模型）
-├── test_confusion_matrix.{csv,png}    # 测试集混淆矩阵（ConvNeXt-Tiny）
-├── test_classification_report.csv     # 测试集分类报告（ConvNeXt-Tiny）
-├── test_metrics.json                  # 测试集指标汇总（ConvNeXt-Tiny）
+├── val_{model}_confusion_matrix.{csv,png}   # 每模型独立的验证集混淆矩阵
+├── val_{model}_classification_report.csv   # 每模型独立的分类报告
+├── val_{model}_metrics.json               # 每模型独立的指标汇总
+├── test_{model}_confusion_matrix.{csv,png}  # 测试集混淆矩阵
+├── test_{model}_classification_report.csv   # 测试集分类报告
+├── test_{model}_metrics.json               # 测试集指标汇总
 ├── error_analysis/
 │   ├── top_correct.csv                # 高置信度正确预测
 │   ├── top_failed.csv                 # 高置信度失败预测
@@ -104,12 +104,12 @@ outputs/
 
 ### 文件
 
-| 文件 | 含义 | 注意 |
-|------|------|------|
-| `val_confusion_matrix.csv` | 混淆矩阵数值表 | 被最后运行的模型覆盖 |
-| `val_confusion_matrix.png` | 混淆矩阵可视化图 | 同上 |
-| `val_classification_report.csv` | 各类别 precision/recall/f1 | 同上 |
-| `val_metrics.json` | 汇总指标 JSON | 同上 |
+| 文件 | 含义 |
+|------|------|
+| `val_{model}_confusion_matrix.csv` | 混淆矩阵数值表（每模型独立） |
+| `val_{model}_confusion_matrix.png` | 混淆矩阵可视化图 |
+| `val_{model}_classification_report.csv` | 各类别 precision/recall/f1 |
+| `val_{model}_metrics.json` | 汇总指标 JSON |
 
 ### 来源
 
@@ -224,7 +224,7 @@ outputs/
 ## 复现命令
 
 ```bash
-# 训练后评估
+# 训练后评估（每个模型独立输出）
 python scripts/evaluate.py --config configs/baseline_cnn.yaml --split val
 python scripts/evaluate.py --config configs/resnet18.yaml --split val
 python scripts/evaluate.py --config configs/convnext_tiny.yaml --split val

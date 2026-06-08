@@ -182,7 +182,7 @@ outputs/
 
 ### 来源
 
-由 `scripts/run_gradcam.py` 对每个模型生成 5 张失败样本的 Grad-CAM 热力图。
+由 `scripts/run_gradcam.py` 对 ConvNeXt-Tiny 生成。当前目录包含正确分类与错误分类的 Grad-CAM 热力图，以及一张对比汇总图。
 
 ### 文件命名规则
 
@@ -190,16 +190,22 @@ outputs/
 {case}_{序号}_{original|gradcam}.jpg
 ```
 
+- `correct_*`: 高置信度正确预测样本
+- `failed_*`: 高置信度错误预测样本
 - `original`: 原始皮肤镜图像
 - `gradcam`: 叠加了热力图的版本，红色区域表示模型决策时最关注的部位
 
-### 核心结论
+### 汇总对照图
 
-- **Baseline CNN**: 注意力分散，关注区域不聚焦于病灶本身。
-- **ResNet18**: 注意力集中在病灶区域，但部分样本关注到背景或毛发。
-- **ConvNeXt-Tiny**: 注意力最聚焦，基本落在病灶核心区域，解释性最好。
+`gradcam_comparison.png`：由 `--comparison` 模式生成，将正确/失败样本左右并排，每格标注 true label → pred label 及置信度，绿色=正确，红色=错误，方便报告直接引用。
 
-> **注意**: 由于输出目录固定，仅保留最后运行模型的三组图像。如需保留每个模型独立的 Grad-CAM 图，可修改 `--output-dir` 参数。
+### 核心结论（ConvNeXt-Tiny）
+
+- **正确预测**: 热力图集中在病灶主体区域，模型关注的是临床相关特征
+- **错误预测**: 热力图倾向于分散到背景、毛发或病灶边缘，说明模型可能依赖了非病灶特征
+- 部分极高置信度（>0.99）的误判样本中，热力图仍然落在病灶区域，表明模型在视觉特征上存在本质混淆（如 MEL↔NV）
+
+> **注意**: 当前保存的是 ConvNeXt-Tiny 的结果。如需其他模型的 Grad-CAM，使用 `--config` 指定对应配置，并建议用 `--output-dir` 分目录存放避免覆盖。
 
 ---
 
@@ -236,9 +242,7 @@ python scripts/evaluate.py --config configs/convnext_tiny.yaml --split test
 python scripts/analyze_errors.py --predictions outputs/predictions_convnext_tiny.csv
 
 # Grad-CAM
-python scripts/run_gradcam.py --config configs/baseline_cnn.yaml --predictions-csv outputs/predictions_baseline.csv --case failed --num-samples 5
-python scripts/run_gradcam.py --config configs/resnet18.yaml --predictions-csv outputs/predictions_resnet18.csv --case failed --num-samples 5
-python scripts/run_gradcam.py --config configs/convnext_tiny.yaml --predictions-csv outputs/predictions_convnext_tiny.csv --case failed --num-samples 5
+python scripts/run_gradcam.py --config configs/convnext_tiny.yaml --predictions-csv outputs/predictions_convnext_tiny.csv --comparison
 
 # 汇总图
 python scripts/plot_visualizations.py

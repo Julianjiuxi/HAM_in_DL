@@ -159,12 +159,14 @@ python scripts/analyze_errors.py --predictions outputs/predictions_convnext_tiny
 ### 6.6 Grad-CAM visualization
 
 ```bash
-python scripts/run_gradcam.py --config configs/baseline_cnn.yaml --predictions-csv outputs/predictions_baseline.csv --case failed --num-samples 5
-python scripts/run_gradcam.py --config configs/resnet18.yaml --predictions-csv outputs/predictions_resnet18.csv --case failed --num-samples 5
+# 单模型失败样本
 python scripts/run_gradcam.py --config configs/convnext_tiny.yaml --predictions-csv outputs/predictions_convnext_tiny.csv --case failed --num-samples 5
+
+# 一键对比模式：自动生成 correct + failed + gradcam_comparison.png 对照图
+python scripts/run_gradcam.py --config configs/convnext_tiny.yaml --predictions-csv outputs/predictions_convnext_tiny.csv --comparison
 ```
 
-Grad-CAM 依赖 `evaluate.py` 已生成的 predictions CSV。
+Grad-CAM 依赖 `evaluate.py` 已生成的 predictions CSV。`--comparison` 模式会同时生成 correct/failed 单张图，并输出一张并排对照表 `outputs/gradcam/gradcam_comparison.png`。当前 `outputs/gradcam/` 中保存的是 ConvNeXt-Tiny 的结果。
 
 ### 6.7 One-click reproduction (full pipeline)
 
@@ -190,9 +192,7 @@ python scripts/evaluate.py --config configs/convnext_tiny.yaml --split test
 python scripts/analyze_errors.py --predictions outputs/predictions_convnext_tiny.csv
 
 # === Grad-CAM ===
-python scripts/run_gradcam.py --config configs/baseline_cnn.yaml --predictions-csv outputs/predictions_baseline.csv --case failed --num-samples 5
-python scripts/run_gradcam.py --config configs/resnet18.yaml --predictions-csv outputs/predictions_resnet18.csv --case failed --num-samples 5
-python scripts/run_gradcam.py --config configs/convnext_tiny.yaml --predictions-csv outputs/predictions_convnext_tiny.csv --case failed --num-samples 5
+python scripts/run_gradcam.py --config configs/convnext_tiny.yaml --predictions-csv outputs/predictions_convnext_tiny.csv --comparison
 ```
 
 ### 6.8 Experiment summary visualizations

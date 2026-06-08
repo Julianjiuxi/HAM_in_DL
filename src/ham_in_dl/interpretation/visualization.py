@@ -91,6 +91,68 @@ def plot_loss_curves(
     plt.close(fig)
 
 
+def plot_gradcam_comparison(
+    cases: list[dict],
+    output_path: str | Path,
+    *,
+    n_cols: int = 2,
+    title: str = "Grad-CAM Comparison",
+) -> None:
+    """Create a side-by-side comparison figure of original vs Grad-CAM images.
+
+    Args:
+        cases: List of dicts, each with keys:
+            'original' (Path or str), 'overlay' (Path or str),
+            'true_label' (str), 'pred_label' (str),
+            'confidence' (float), 'correct' (bool).
+        output_path: Where to save the figure.
+        n_cols: Number of columns per row (2 = original + overlay per case).
+        title: Overall figure title.
+    """
+    _setup_style()
+    n = len(cases)
+    n_rows = (n + n_cols - 1) // n_cols
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(5 * n_cols, 5 * n_rows))
+    if n_rows == 1:
+        axes = axes.reshape(1, -1)
+
+    for i, case in enumerate(cases):
+        row, col = divmod(i, n_cols)
+        ax = axes[row][col]
+
+        original = Image.open(case["original"]).convert("RGB")
+        overlay = Image.open(case["overlay"]).convert("RGB")
+
+        # Combine original (left half) + overlay (right half) in one subplot
+        ow, oh = original.size
+        combined = Image.new("RGB", (ow * 2, oh))
+        combined.paste(original, (0, 0))
+        combined.paste(overlay.crop((0, 0, ow, oh)) if overlay.size != original.size else overlay, (ow, 0))
+
+        ax.imshow(np.array(combined))
+        ax.axis("off")
+
+        status = "Correct" if case["correct"] else "Failed"
+        color = "green" if case["correct"] else "red"
+        ax.set_title(
+            f"{status} | True: {case['true_label']} → Pred: {case['pred_label']}\n"
+            f"Conf: {case['confidence']:.4f}",
+            color=color,
+            fontsize=10,
+        )
+
+    # Hide unused axes
+    for j in range(n, n_rows * n_cols):
+        row, col = divmod(j, n_cols)
+        axes[row][col].axis("off")
+
+    fig.suptitle(title, fontsize=14, fontweight="bold")
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=200, bbox_inches="tight")
+    plt.close(fig)
+
+
 def plot_accuracy_curves(
     history_paths: dict[str, str | Path],
     output_path: str | Path,

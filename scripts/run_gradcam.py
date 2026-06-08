@@ -17,7 +17,7 @@ from ham_in_dl.constants import NUM_CLASSES
 from ham_in_dl.data.dataset import HAMDataset
 from ham_in_dl.data.transforms import build_eval_transforms
 from ham_in_dl.interpretation.gradcam import generate_gradcam
-from ham_in_dl.interpretation.visualization import overlay_heatmap
+from ham_in_dl.interpretation.visualization import overlay_heatmap, plot_gradcam_comparison
 from ham_in_dl.models.model_factory import build_model
 from ham_in_dl.seed import set_seed
 
@@ -33,6 +33,10 @@ def main() -> None:
     )
     parser.add_argument("--num-samples", type=int, default=5)
     parser.add_argument("--output-dir", default="outputs/gradcam")
+    parser.add_argument("--comparison", action="store_true",
+                        help="Generate both correct & failed cases and a comparison figure")
+    parser.add_argument("--comparison-samples", type=int, default=3,
+                        help="Number of cases per side in comparison mode")
     args = parser.parse_args()
 
     with open(args.config, encoding="utf-8") as f:
@@ -78,6 +82,60 @@ def main() -> None:
     transform = build_eval_transforms(config["data"]["image_size"])
 
     predictions = pd.read_csv(args.predictions_csv)
+
+    if args.comparison:
+        # Generate both correct and failed cases, then create a comparison figure
+        correct_mask = predictions["correct"].astype(bool)
+        correct_subset = predictions.loc[correct_mask].sort_values(
+            "confidence", ascending=False
+        ).head(args.comparison_samples)
+        failed_subset = predictions.loc[~correct_mask].sort_values(
+            "confidence", ascending=False
+        ).head(args.comparison_samples)
+
+        all_cases: list[dict] = []
+        output_dir = Path(args.output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        for tag, subset in [("correct", correct_subset), ("failed", failed_subset)]:
+            for idx, (_, row) in enumerate(subset.iterrows()):
+                img_path = Path(row["image_path"])
+                image = Image.open(img_path).convert("RGB")
+                input_tensor = transform(image).unsqueeze(0).to(device)
+
+                heatmap, target_class, conf = generate_gradcam(
+                    model, input_tensor, target_layer
+                )
+                overlay = overlay_heatmap(image, heatmap.numpy())
+
+                orig_path = output_dir / f"{tag}_{idx+1}_original.jpg"
+                grad_path = output_dir / f"{tag}_{idx+1}_gradcam.jpg"
+                image.save(orig_path)
+                overlay.save(grad_path)
+
+                all_cases.append({
+                    "original": str(orig_path),
+                    "overlay": str(grad_path),
+                    "true_label": row.get("true_label", "?"),
+                    "pred_label": row.get("pred_label", "?"),
+                    "confidence": float(conf),
+                    "correct": tag == "correct",
+                })
+                print(
+                    f"{tag} {idx+1}: {img_path.name} "
+                    f"true={row.get('true_label', '?')} "
+                    f"pred={row.get('pred_label', '?')} conf={conf:.4f}"
+                )
+
+        comparison_path = output_dir / "gradcam_comparison.png"
+        plot_gradcam_comparison(
+            all_cases,
+            comparison_path,
+            title=f"{config['model']} Grad-CAM: Correct vs Failed Predictions",
+        )
+        print(f"Comparison figure saved to {comparison_path}")
+        return
+
     mask = predictions["correct"].astype(bool)
     if args.case == "failed":
         subset = predictions.loc[~mask]

@@ -1,0 +1,1139 @@
+# AI Dialogue Records — Processed
+
+---
+
+## Record 1
+
+- **Date**: 2025-05-22
+- **Tool**: ChatGPT
+- **Purpose**: 理解课程项目要求，明确需要完成的任务范围
+- **How the group verified or modified the AI output**: 对照原始 PDF 核对 AI 提取的要求；后续将总结内容写入 `2026_Project_Requirements.md` 并提交到仓库
+
+### Important prompts and outputs
+
+> **Prompt**: 查看这门课proj的项目要求，我要做什么？
+
+> **Output**:
+
+从项目说明看，这门课的 proj 是一个 **皮肤病灶图像分类深度学习项目**：用 PyTorch 基于 ISIC 2018 / HAM10000 数据集做 7 类分类，并完成完整的训练、评估、解释和报告。
+
+## 你具体要做什么
+
+### 1. 做至少两个模型
+
+你们组至少需要完成：
+
+| 类型                      | 要求           | 例子                                       |
+| ----------------------- | ------------ | ---------------------------------------- |
+| Baseline model          | 至少一个简单深度学习模型 | 自己写的简单 CNN                               |
+| Transfer learning model | 至少一个预训练模型    | ResNet、DenseNet、EfficientNet、MobileNet 等 |
+
+也就是说，不能只交一个模型。最基本组合可以是：
+
+**Simple CNN + ResNet18 / EfficientNet-B0**
+
+---
+
+### 2. 用 PyTorch 完成完整流程
+
+代码里应该包括：
+
+1. 数据读取
+2. 图像预处理
+3. 数据增强
+4. 模型构建
+5. 训练
+6. 验证
+7. 测试
+8. 指标计算
+9. 混淆矩阵
+10. 模型保存
+11. 结果复现说明
+
+注意：**test set 只能最后报告结果，不能用来调参或选模型。**
+
+---
+
+### 3. 要报告的评价指标
+
+报告里至少应该有这些指标：
+
+* Accuracy
+* Precision
+* Recall
+* F1-score
+* Macro-F1
+* Confusion matrix
+
+因为 HAM10000 类别不平衡，**Macro-F1 很重要**，不要只看 accuracy。
+
+---
+
+### 4. 要分析实验问题
+
+报告里需要讨论这些点：
+
+* 类别不平衡 class imbalance
+* 过拟合 overfitting
+* 数据增强 data augmentation
+* 模型泛化 model generalization
+* 不同模型或训练策略的性能比较
+
+比如可以比较：
+
+| 实验                            | 说明          |
+| ----------------------------- | ----------- |
+| Simple CNN                    | baseline    |
+| ResNet18 without augmentation | 迁移学习基础版     |
+| ResNet18 with augmentation    | 看数据增强是否有效   |
+| EfficientNet-B0               | 和 ResNet 对比 |
+
+---
+
+### 5. 要做模型解释
+
+必须提供模型解释，例如：
+
+* Grad-CAM
+* 或其他可视化方法
+
+建议做 **Grad-CAM**，展示模型看图像的哪些区域来判断皮肤病类别。
+
+---
+
+### 6. 要分析成功和失败案例
+
+你需要挑一些预测结果来分析：
+
+| 类型           | 要做什么                       |
+| ------------ | -------------------------- |
+| 成功预测样例       | 模型为什么可能预测对                 |
+| 失败预测样例       | 为什么预测错，例如类别相似、图像模糊、病灶区域不明显 |
+| Grad-CAM 可视化 | 看模型是否关注到了病灶区域              |
+
+---
+
+## 最后要交什么
+
+你们组最后要提交 **一个 zip 文件**，里面包括：
+
+1. **研究报告 PDF**
+2. **PyTorch 源代码**
+3. **训练好的模型权重**，如果有的话
+4. **README 文件**
+5. **AI 对话记录**，如果使用了 AI 工具
+
+你现在和我这段对话也属于 AI 使用记录，建议后面保存下来。
+
+---
+
+## 报告 PDF 应该包含什么
+
+报告结构要求如下：
+
+1. Title and Group Members（包括学号和中文姓名）
+2. Abstract
+3. Introduction and motivation
+4. Dataset description and preprocessing
+5. Methodology
+6. Experimental results and analysis
+7. Model interpretation and error analysis
+8. Conclusion
+9. References
+10. AI tool usage statement
+
+---
+
+## README 需要写什么
+
+README 至少解释：
+
+* 文件结构
+* 需要安装的 Python packages
+* 如何训练模型
+* 如何评估模型
+* 如何复现实验结果
+
+例如：
+
+```text
+python train.py --model resnet18
+python evaluate.py --model_path checkpoints/best_resnet18.pth
+python gradcam.py --image_path examples/test.jpg
+```
+
+---
+
+## 截止时间和分数
+
+**截止时间：6 月 10 日中午 12:00。**
+
+这个 project 占总成绩 **30%**：
+
+| 部分                | 分数 |
+| ----------------- | -: |
+| 研究报告，包括实验分析和模型解释  | 20 |
+| 代码实现、可复现性、AI 对话记录 | 10 |
+| 总分                | 30 |
+
+---
+
+## 最推荐你的执行路线
+
+你可以按这个顺序做：
+
+1. 先跑通数据加载和标签读取
+2. 训练一个简单 CNN，当 baseline
+3. 训练一个 ResNet18 或 EfficientNet-B0
+4. 加入数据增强和 class imbalance 处理
+5. 输出 validation 和 test 指标
+6. 画 confusion matrix
+7. 做 Grad-CAM
+8. 选成功/失败案例分析
+9. 写报告和 README
+10. 打包 PDF、代码、权重、AI 记录
+
+当前最重要的是：**先把 baseline CNN 和一个 transfer learning 模型跑起来，然后再补分析和报告。**
+
+---
+
+## Record 2
+
+- **Date**: 2025-05-22
+- **Tool**: ChatGPT
+- **Purpose**: 根据课程要求和小组规模，生成项目基础架构（目录结构 + 空脚本 + README）
+- **How the group verified or modified the AI output**: 将 AI 生成的 scaffold zip 解压后作为仓库初始结构提交；后续根据实际开发需求对脚本进行了填充和重构
+
+### Important prompts and outputs
+
+> **Prompt**: 你帮我根据小组合作的规模，设计一个HAM_in_DL的项目架构，里面有README.md和各个组分的空脚本，zip格式，我上传到仓库里面作为项目的基本架构
+
+> **Output**:
+
+已经做好了一个可直接上传 GitHub 的项目基础架构 zip：
+
+[下载 HAM_in_DL_project_scaffold.zip](sandbox:/mnt/data/HAM_in_DL_project_scaffold.zip)
+
+我按课程要求设计了结构：包含 **baseline CNN、transfer learning、PyTorch 训练/验证/测试、指标评估、confusion matrix、Grad-CAM、错误分析、README、AI 使用记录、报告模板** 等模块，对应项目说明中要求的模型比较、评估指标、模型解释和提交文件。
+
+压缩包内主要结构是：
+
+```text
+HAM_in_DL/
+├── README.md
+├── requirements.txt
+├── configs/
+│   ├── baseline_cnn.yaml
+│   └── resnet18.yaml
+├── data/
+├── src/ham_in_dl/
+│   ├── data/
+│   ├── models/
+│   ├── training/
+│   ├── evaluation/
+│   ├── interpretation/
+│   └── utils/
+├── scripts/
+│   ├── train_baseline.py
+│   ├── train_transfer.py
+│   ├── evaluate.py
+│   ├── run_gradcam.py
+│   ├── make_splits.py
+│   └── analyze_errors.py
+├── outputs/
+├── checkpoints/
+├── report/
+├── docs/
+├── ai_dialogue_records/
+└── tests/
+```
+
+里面的脚本不是完整实现，而是适合作为小组项目起点的 **空骨架 / TODO skeleton**。README 里也写好了小组分工建议、运行命令、实验记录方式、报告 checklist 和提交 checklist。
+
+上传仓库时可以这样做：
+
+```bash
+unzip HAM_in_DL_project_scaffold.zip
+cd HAM_in_DL
+git init
+git add .
+git commit -m "init HAM_in_DL project scaffold"
+git branch -M main
+git remote add origin <your-repo-url>
+git push -u origin main
+```
+
+---
+
+## Record 3
+
+- **Date**: 2025-05-23
+- **Tool**: ChatGPT
+- **Purpose**: 将课程 PDF 原始要求转换为 Markdown 文件，方便存入仓库
+- **How the group verified or modified the AI output**: 对照原始 PDF 核对转换内容；将生成的文件以 `2026_Project_Requirements.md` 存入仓库根目录；后续作为开发参考
+
+### Important prompts and outputs
+
+> **Prompt**: 帮我把2026project那个项目的原始要求转化成一个.md文件
+
+> **Output**:
+
+已帮你把 `2026 Project.pdf` 的原始项目要求转成 Markdown 文件，保留英文原文内容，并整理成标题、表格和清单格式，方便放进 GitHub 仓库。来源是你上传的项目 PDF。
+
+[下载 2026_Project_Requirements.md](sandbox:/mnt/data/2026_Project_Requirements.md)
+
+---
+
+## Record 4
+
+- **Date**: 2025-05-23
+- **Tool**: ChatGPT
+- **Purpose**: 确认 GitHub 仓库创建和推送状态
+- **How the group verified or modified the AI output**: 在 GitHub 网页端确认仓库可见；按 AI 建议检查 `git status`、`git log`、`git remote -v`；后续补充推送了项目文件
+
+### Important prompts and outputs
+
+> **Prompt**: 我推到github上面了，课程项目公开叫做https://github.com/Julianjiuxi/HAM_in_DL.git
+
+> **Output**:
+
+好的，我确认到了这个 GitHub 仓库：
+
+**Julianjiuxi/HAM_in_DL**
+Repository URL: `https://github.com/Julianjiuxi/HAM_in_DL.git`
+Visibility: **public**
+Default branch: **main**
+
+不过目前仓库显示 size 为 **0**，也就是 GitHub 这边可能还没有实际文件内容，或者刚 push 完还没同步显示。你可以检查一下本地是否已经成功提交并推送：
+
+```bash
+git status
+git log --oneline --max-count=3
+git remote -v
+git branch
+```
+
+如果本地有文件但 GitHub 上空，可以再执行：
+
+```bash
+git add .
+git commit -m "init HAM_in_DL project scaffold"
+git push -u origin main
+```
+
+接下来建议你在仓库里补上这几个文件/目录作为课程项目的基础信息：
+
+```text
+README.md
+2026_Project_Requirements.md
+requirements.txt
+configs/
+src/
+scripts/
+report/
+ai_dialogue_records/
+```
+
+尤其是 `2026_Project_Requirements.md`，可以放在根目录或者 `docs/` 目录下，方便组员随时查看项目原始要求。
+
+---
+
+## Record 5
+
+- **Date**: 2025-06-07
+- **Tool**: ChatGPT
+- **Purpose**: 评估当前数据预处理流程的设计合理性，诊断"屎山苗头"并给出重构方案
+- **How the group verified or modified the AI output**: 按建议将 `prepare_processed_data.py` 默认模式改为 copy；新增 `scripts/setup_data.py` 统一入口；新增 `scripts/dataprocess/validate_data.py` 独立校验；顶层 README 简化为 quickstart；将解压结果从 `raw/_downloads` 分离到 `data/extracted/`
+
+### Important prompts and outputs
+
+> **Prompt**: 我改了改，完善了数据预处理流程，你评估一下。貌似已经有点屎山了，一个下载加解压加处理跨了好几个文件夹和说明文件，是不是管理的问题，真实的合作dl项目数据流程是怎么做的
+
+> **Output**:
+
+我看了你现在 GitHub 上能看到的版本：**不是纯粹"文件夹管理问题"，而是数据流水线的"入口和状态管理"开始变复杂了。**
+也就是说，拆成 download / extract / process 本身没错；真正容易变成屎山的是：每一步的输入输出状态不清楚、脚本不幂等、README 分散、没有一个统一入口。
+
+## 先说结论
+
+你现在的数据流程方向是对的，甚至比很多课程项目更认真：
+
+* `data/README.md` 已经把流程分成了 `download → extract → processed`，并且说明了不把大图像数据提交到 GitHub。
+* 你把最终训练/评估读取对象统一到了 `data/processed/ham10000/metadata.csv` 和 `data/processed/testset/metadata.csv`，并规定了核心列 `image_id / label / image_path`。这个设计是很好的。
+* 你还记录了老师测试集里少一张图 `ISIC_0035068` 的问题，并让处理脚本默认剔除缺失样本、严格模式下报错。这个很像真实项目里会做的数据质量记录。
+
+但现在确实有几个"屎山苗头"。
+
+---
+
+## 主要问题 1：`move` 默认值会破坏可重复运行
+
+`prepare_processed_data.py` 默认 `--mode move`，也就是把 raw 目录移动到 processed。代码里 `_transfer()` 在 `mode == "move"` 时直接 `shutil.move`。
+
+这会带来两个问题：
+
+第一，**脚本不幂等**。你第一次运行成功后，raw 目录里的图片已经被移动走了；第二次再运行，源路径就没了。真实合作项目里，数据处理脚本最好能反复跑，尤其是组员环境不一样时。
+
+第二，当前代码里有一个实际 bug：你先把 test groundtruth 从 raw 移动到 processed，然后又在 `build_testset_metadata()` 里从原 raw 位置读取 groundtruth。代码顺序是先 `_transfer(test_gt_src, dst_test_dir / "groundtruth.csv", mode=args.mode)`，然后调用 `build_testset_metadata(src_testset_dir, dst_test_dir, ...)`。但 `build_testset_metadata()` 里面读取的是 `src_testset_dir / "ISIC2018_Task3_Test_GroundTruth.csv"`。
+
+所以如果用默认 `--mode move`，这里很可能会因为 groundtruth 已被移动而失败。
+
+**建议：默认改成 `copy`。**
+对于课程项目，不要为了省空间牺牲可复现性。可以保留 `move`，但不要默认用它。
+
+```bash
+python scripts/dataprocess/prepare_processed_data.py --mode copy --force
+```
+
+---
+
+## 主要问题 2：extract 脚本太"全有或全无"
+
+`extract_archives.py` 现在默认同时解压 Kaggle archive 和老师 TestSet。它会依次执行 Kaggle 解压和 TestSet 解压。
+
+问题是现实里组员环境经常是：
+
+* 有人只有老师测试集，没有 Kaggle zip
+* 有人已经解压了 Kaggle，只想处理 TestSet
+* 有人从 kagglehub 下载后不是 `archive.zip` 这个路径
+* 有人只想重新处理 processed，不想重新 extract
+
+所以 extract 脚本最好支持更灵活的行为：
+
+```bash
+python scripts/datadownload/extract_archives.py --source kaggle
+python scripts/datadownload/extract_archives.py --source testset
+python scripts/datadownload/extract_archives.py --source all
+```
+
+或者更简单：
+
+```bash
+--skip-missing
+```
+
+否则一个缺失文件会阻断整个流程。
+
+---
+
+## 主要问题 3：说明文档分散，缺少"唯一入口"
+
+现在详细数据流程主要写在 `data/README.md`，顶层 `README.md` 只写了数据放置和训练命令。顶层 README 的 Common commands 里第一步还是 `make_splits.py`，但这个脚本目前只是 TODO。
+
+这会让组员产生困惑：
+
+"我到底是先跑 make_splits，还是先跑 extract，还是先跑 prepare_processed_data？"
+
+真实合作项目里，通常会保留详细文档，但必须有一个 **一眼能跑通的入口**。比如顶层 README 加一个：
+
+````md
+## Data setup quickstart
+
+```bash
+# 1. Put archives here:
+# data/raw/_downloads/HAM10000_TestSet.zip
+
+# 2. Optional: download Kaggle HAM10000
+python scripts/datadownload/download_ham10000_kagglehub.py
+
+# 3. Extract archives
+python scripts/datadownload/extract_archives.py --force
+
+# 4. Build processed dataset
+python scripts/dataprocess/prepare_processed_data.py --mode copy --force
+````
+
+详细解释可以继续放 `data/README.md`，但顶层 README 必须给最短路径。
+
+---
+
+## 真实合作 DL 项目的数据流程通常怎么做
+
+一般会分成这几层：
+
+```text
+raw data
+  ↓
+extracted / staged data
+  ↓
+processed canonical dataset
+  ↓
+splits / metadata
+  ↓
+Dataset + DataLoader
+  ↓
+training / evaluation
+```
+
+对应到你这个项目，我建议是：
+
+```text
+data/
+├── raw/
+│   └── _downloads/              # 原始 zip、kagglehub 缓存，不进 git
+├── extracted/                   # 解压后的原始结构，不进 git
+├── processed/                   # 项目统一格式，不进 git
+│   ├── ham10000/
+│   │   ├── images/
+│   │   └── metadata.csv
+│   └── testset/
+│       ├── images/
+│       ├── groundtruth.csv
+│       ├── metadata.csv
+│       └── missing_images.txt
+└── splits/                      # 可以进 git，小 CSV
+    ├── train.csv
+    ├── val.csv
+    └── test.csv
+```
+
+核心原则是：
+
+**raw 永远不要被修改。processed 可以删除重建。splits 要固定并可追踪。Dataset 只读 processed/splits，不负责下载、解压、清洗。**
+
+你现在已经在往这个方向走，只是中间的 `raw/_downloads/ham10000_kaggle` 同时承担了"下载缓存"和"解压目录"的职责，所以开始显乱。可以把解压结果单独放到 `data/extracted/`，清晰很多。
+
+---
+
+## 我建议你现在立刻做的调整
+
+### 1. 把默认 `move` 改成 `copy`
+
+在 `prepare_processed_data.py` 里：
+
+```python
+default="copy"
+```
+
+然后 README 也统一写 `--mode copy --force`。
+
+`move` 可以保留，但写成高级选项：
+
+```bash
+python scripts/dataprocess/prepare_processed_data.py --mode move --force
+```
+
+---
+
+### 2. 新增一个总入口脚本
+
+保留现在的细分脚本，但新增：
+
+```text
+scripts/setup_data.py
+```
+
+它只负责串起来：
+
+```text
+download optional
+extract
+prepare processed
+validate
+```
+
+这样组员只需要知道一个命令：
+
+```bash
+python scripts/setup_data.py --prepare-all
+```
+
+细分脚本留给调试用，不让新组员直接面对 3 个目录、4 个 README、5 个命令。
+
+---
+
+### 3. 把数据检查单独做成 `validate_data.py`
+
+比如：
+
+```text
+scripts/dataprocess/validate_data.py
+```
+
+检查：
+
+* `data/processed/ham10000/metadata.csv` 是否存在
+* `data/processed/testset/metadata.csv` 是否存在
+* `image_path` 指向的文件是否存在
+* 7 个类别是否都合法
+* test 缺失图像是否已经记录
+* train/val/test 是否没有互相污染
+
+这比把所有检查塞进 prepare 脚本里更清楚。
+
+---
+
+### 4. 顶层 README 只放 quickstart
+
+详细数据说明放 `data/README.md` 没问题，但顶层 README 应该只保留：
+
+```text
+1. Install environment
+2. Put data archives
+3. Run data setup
+4. Train baseline
+5. Train transfer model
+6. Evaluate
+7. Grad-CAM
+```
+
+否则 README 越写越像日记，后面组员会懒得看。
+
+---
+
+## 我对你当前架构的评价
+
+不是屎山，准确说是：**已经进入了"需要 orchestration 的阶段"。**
+
+文件数量变多不是问题。真实 DL 项目里 download、extract、preprocess、split、dataset loader 分开是正常的。问题在于现在缺少这三样东西：
+
+1. **一个统一入口**：新组员不知道第一条命令跑什么。
+2. **幂等性**：默认 `move` 会让脚本跑一次后状态改变，后续重跑变困难。
+3. **清晰的数据状态层级**：`raw/_downloads` 现在同时放 zip、kagglehub cache、extracted 数据，有点混。
+
+最小重构方案是：
+
+```text
+scripts/
+├── setup_data.py                 # 给组员用
+├── datadownload/
+│   ├── download_ham10000_kagglehub.py
+│   └── extract_archives.py
+└── dataprocess/
+    ├── prepare_processed_data.py
+    └── validate_data.py
+```
+
+然后文档里只告诉组员：
+
+```bash
+python scripts/setup_data.py --all
+```
+
+这就从"屎山感"变成了"专业数据流水线"。
+
+---
+
+## Record 6
+
+- **Date**: 2025-06-07
+- **Tool**: ChatGPT
+- **Purpose**: 分析选择性迁移组员分支后的仓库状态，识别代码接口不一致和科学性问题
+- **How the group verified or modified the AI output**: 修复了 `model_factory.py` 接口不一致（统一为 `build_model(model_name, *, num_classes, pretrained, freeze_backbone)`）；修复了 Grad-CAM target layer 错误（ResNet 改为 `model.layer4[-1]`）；修复了 freeze_backbone 冻结分类头的问题；采用 lesion-level 分组切分消除 train/val leakage 并重新生成 split CSV；修复了 config 参数（pretrained/freeze_backbone）在训练脚本中未生效的问题；新增 ConvNeXt-Tiny 模型及对应 config 和 Grad-CAM 支持
+
+### Important prompts and outputs
+
+> **Prompt**: 检查一下，我新增了一个分支，codex什么什么的，是组员的贡献，我没改直接push了，然后我在main上面新增了一次改动，全流程升级，按照你的建议进行了有选择的迁移，你分析一下仓库现状
+
+> **Output**:
+
+我看了一遍当前仓库状态。结论是：
+
+**你的选择性迁移方向是对的，main 已经比组员的 codex 分支更适合作为主线；但现在 main 还不能直接开始训练，因为有 2 个会立刻报错的接口不一致问题，以及 1 个实验科学性问题：train/val 存在 lesion-level leakage。**
+
+---
+
+## 1. 当前分支状态
+
+现在仓库默认分支还是 **main**，仓库 size 已经到 37，说明你确实推了更多内容上去。
+
+目前可以理解成两条线：
+
+```text
+bcd5ae8 数据预处理统合流程
+├── codex/complete-dl-pipeline
+│   └── 92d9722 Complete deep learning pipeline
+└── main
+    └── 你后续选择性迁移后的全流程升级
+```
+
+`codex/complete-dl-pipeline` 和 `main` 现在已经 **diverged**。这很正常，因为你没有直接 merge 组员分支，而是在 main 上做了选择性整合。这个处理方式是对的。
+
+---
+
+## 2. 你迁移做对的地方
+
+### 2.1 `.gitignore` 现在比较合理
+
+你现在忽略了：
+
+```text
+/data/raw/*
+/data/processed/*
+/checkpoints/*
+*.pt
+*.pth
+```
+
+同时允许提交小型 split 文件：
+
+```text
+!/data/splits/*.csv
+!/data/splits/*.json
+```
+
+这个设计是对的：**大数据和模型权重不进 Git，split CSV 可以进 Git 保证实验复现。**
+
+---
+
+### 2.2 config 已经从 `data/processed/splits` 改到了 `data/splits`
+
+这是我之前建议的方向。你现在的 `resnet18.yaml` 已经使用：
+
+```yaml
+split_dir: data/splits
+train_csv: data/splits/train.csv
+val_csv: data/splits/val.csv
+test_csv: data/processed/testset/metadata.csv
+```
+
+这比组员 codex 分支里的 `data/processed/splits` 更合理。main 现在把 split 当成"实验定义文件"，而不是 processed 大数据的一部分。
+
+对比一下，组员的 codex 分支仍然是：
+
+```yaml
+split_dir: data/processed/splits
+train_csv: data/processed/splits/train.csv
+val_csv: data/processed/splits/val.csv
+```
+
+这个不如 main 现在的设计。
+
+---
+
+### 2.3 Dataset / DataLoader 基本已经迁移成功
+
+现在的 `HAMDataset` 已经可以从 CSV 读取，支持：
+
+* `csv_path`
+* `root_dir`
+* `image_path`
+* `label`
+* 自动把字符串标签转成 index
+* 返回 `image, torch.long label`
+* `build_dataset_from_csv`
+* `build_dataloader`
+
+这部分结构是可用的，而且已经适合后续训练脚本使用。
+
+---
+
+### 2.4 evaluate 输出已经补了必要 metadata
+
+你现在的 `scripts/evaluate.py` 输出 prediction dataframe 时包含：
+
+```text
+image_id
+dataset
+image_path
+true_label
+pred_label
+true_index
+pred_index
+confidence
+correct
+```
+
+这比组员原始版本更适合后面做 error analysis 和 Grad-CAM。
+
+---
+
+### 2.5 数据流程文档仍然清楚
+
+`data/README.md` 还保留了统一入口：
+
+```bash
+python scripts/setup_data.py --force
+```
+
+并且完整解释了 raw downloads、extract、processed、validate，以及测试集缺失图片问题。这个文档结构目前是清楚的。
+
+---
+
+## 3. 现在最严重的问题：`build_model` 接口不一致
+
+这个现在会导致训练、评估和测试直接失败。
+
+你的 `model_factory.py` 目前是这样：
+
+```python
+def build_model(config: dict):
+    model_cfg = config["model"]
+    name = model_cfg["name"].lower()
+```
+
+也就是说它期待传入的是完整 config，并且 config 里有嵌套的 `model.name`。
+
+但是你的训练脚本现在这样调用：
+
+```python
+model = build_model(config["model"], num_classes=NUM_CLASSES)
+```
+
+`config["model"]` 在 main 的 YAML 里只是字符串，比如 `"resnet18"` 或 `"baseline_cnn"`。而且还额外传了 `num_classes`。
+
+测试文件也是这样写的：
+
+```python
+model = build_model("baseline_cnn", num_classes=NUM_CLASSES)
+model = build_model("resnet18", num_classes=NUM_CLASSES)
+```
+
+所以现在 main 上跑：
+
+```bash
+python scripts/train_baseline.py
+```
+
+或者：
+
+```bash
+pytest
+```
+
+大概率会直接报：
+
+```text
+TypeError: build_model() got an unexpected keyword argument 'num_classes'
+```
+
+### 建议修法
+
+既然你现在 config 已经改成了简洁格式：
+
+```yaml
+model: resnet18
+```
+
+那就把 `model_factory.py` 改成兼容这个接口：
+
+```python
+def build_model(
+    model_name: str,
+    *,
+    num_classes: int = 7,
+    pretrained: bool = True,
+    freeze_backbone: bool = False,
+):
+    name = str(model_name).lower()
+
+    if name == "baseline_cnn":
+        return BaselineCNN(num_classes=num_classes)
+
+    if name == "resnet18":
+        return build_resnet18(
+            num_classes=num_classes,
+            pretrained=pretrained,
+            freeze_backbone=freeze_backbone,
+        )
+
+    raise ValueError(f"Unknown model name: {name}")
+```
+
+然后 `train_transfer.py` 里可以这样：
+
+```python
+model = build_model(
+    config["model"],
+    num_classes=NUM_CLASSES,
+    pretrained=True,
+    freeze_backbone=False,
+)
+```
+
+baseline 就：
+
+```python
+model = build_model(config["model"], num_classes=NUM_CLASSES)
+```
+
+这是当前最优先要修的。
+
+---
+
+## 4. 第二个会报错的问题：Grad-CAM target layer 写错了
+
+`run_gradcam.py` 里现在写的是：
+
+```python
+target_layer = model.backbone.layer4[-1]
+```
+
+但是你的 `build_resnet18()` 返回的是 torchvision 的标准 ResNet18：
+
+```python
+model = models.resnet18(weights=weights)
+model.fc = nn.Linear(in_features, num_classes)
+return model
+```
+
+这个 model 没有 `backbone` 属性，只有 `layer1 / layer2 / layer3 / layer4 / fc`。
+
+所以 Grad-CAM 会报：
+
+```text
+AttributeError: 'ResNet' object has no attribute 'backbone'
+```
+
+### 建议修法
+
+把：
+
+```python
+target_layer = model.backbone.layer4[-1]
+```
+
+改成：
+
+```python
+target_layer = model.layer4[-1]
+```
+
+如果后面支持更多模型，再写一个 helper：
+
+```python
+def get_target_layer(model, model_name):
+    if model_name == "resnet18":
+        return model.layer4[-1]
+    raise ValueError(f"Grad-CAM target layer not defined for {model_name}")
+```
+
+---
+
+## 5. 最大的科学性问题：当前 train/val split 有 lesion leakage
+
+你现在已经把 `train.csv` 和 `val.csv` 提交到了 `data/splits/`，这本身是好的。问题是：**当前 split 是 image-level stratified split，不是 lesion-level split。**
+
+`split.py` 现在用的是：
+
+```python
+train_test_split(
+    df,
+    test_size=val_size,
+    random_state=seed,
+    stratify=df[label_col],
+)
+```
+
+这只保证 label 分布相对一致，但没有阻止同一个 `lesion_id` 同时出现在 train 和 val。
+
+而我已经在你提交的 CSV 里看到明显泄漏。例如：
+
+`train.csv` 里有：
+
+```text
+HAM_0000118
+HAM_0002730
+HAM_0002761
+HAM_0005132
+```
+
+`val.csv` 里也有：
+
+```text
+HAM_0000118
+HAM_0002730
+HAM_0002761
+HAM_0005132
+```
+
+这意味着同一个皮肤病灶的不同图片被分到了 train 和 val。模型可能不是学会泛化，而是在 validation 里见到了高度相似的病灶样本，导致 validation score 偏高。
+
+### 建议修法
+
+短期至少做一个检查：
+
+```python
+train_lesions = set(train_df["lesion_id"])
+val_lesions = set(val_df["lesion_id"])
+overlap = train_lesions & val_lesions
+print(len(overlap))
+```
+
+更好的做法是把 `create_splits()` 改成 group-aware split。
+
+推荐优先级：
+
+1. **最好**：`StratifiedGroupKFold`
+2. **次好**：`GroupShuffleSplit`，按 `lesion_id` 分组，但 label 分布可能不如 stratified
+3. **最低限度**：保留当前 stratified split，但在报告里承认 limitation
+
+我建议你不要保留现在这版 `data/splits/train.csv` 和 `val.csv`，应该修完 split 逻辑后重新生成并提交。
+
+---
+
+## 6. 当前 main 比 codex 分支更好，但不是"可训练完成态"
+
+### main 现在比 codex 好的地方
+
+| 项目                  | codex 分支                | main 当前                               |
+| ------------------- | ----------------------- | ------------------------------------- |
+| split 位置            | `data/processed/splits` | `data/splits`，更好                      |
+| `.gitignore`        | 原本容易忽略 split            | 现在允许 split CSV/JSON，合理                |
+| prediction metadata | 相对简单                    | 已包含 `image_id`、`dataset`、`image_path` |
+| 数据文档                | 有但偏原始                   | main 保留了统一数据流程                        |
+| 选择性迁移               | 无                       | 有，方向正确                                |
+
+### main 现在还没准备好训练的原因
+
+| 问题                                   | 严重程度 | 是否必须先修        |
+| ------------------------------------ | ---: | ------------- |
+| `build_model` 接口不一致                  |    高 | 必须            |
+| Grad-CAM target layer 错误             |    高 | 训练前可不修，但报告前必须 |
+| train/val lesion leakage             |    高 | 建议训练正式实验前必须修  |
+| config 输出路径与 `.gitignore` 不完全一致      |    中 | 建议修           |
+| split summary / class_to_idx JSON 缺失 |    中 | 建议补           |
+| pytest 尚未作为 gate                     |    中 | 建议修完后跑        |
+
+---
+
+## 7. 还有一个工程小问题：outputs 路径不统一
+
+你的 config 现在写：
+
+```yaml
+output:
+  history_csv: outputs/history_resnet18.csv
+  predictions_csv: outputs/predictions_resnet18.csv
+```
+
+但 `.gitignore` 忽略的是：
+
+```text
+/outputs/predictions/*
+/outputs/gradcam/*
+/outputs/tables/*
+/outputs/figures/*
+```
+
+这意味着 `outputs/history_resnet18.csv` 和 `outputs/predictions_resnet18.csv` 在 `outputs/` 根目录下，可能不会被忽略。建议统一成：
+
+```yaml
+output:
+  history_csv: outputs/tables/history_resnet18.csv
+  predictions_csv: outputs/predictions/predictions_resnet18.csv
+```
+
+或者直接 `.gitignore` 加：
+
+```gitignore
+/outputs/*.csv
+/outputs/*.json
+/outputs/*.png
+```
+
+---
+
+## 8. 我建议你下一次提交按这个顺序修
+
+### 第一步：修模型工厂
+
+修改：
+
+```text
+src/ham_in_dl/models/model_factory.py
+```
+
+让它支持：
+
+```python
+build_model("baseline_cnn", num_classes=7)
+build_model("resnet18", num_classes=7)
+```
+
+这样训练脚本和 tests 都会对上。
+
+---
+
+### 第二步：修 Grad-CAM
+
+修改：
+
+```text
+scripts/run_gradcam.py
+```
+
+把：
+
+```python
+model.backbone.layer4[-1]
+```
+
+改成：
+
+```python
+model.layer4[-1]
+```
+
+---
+
+### 第三步：重做 split
+
+修改：
+
+```text
+src/ham_in_dl/data/split.py
+scripts/make_splits.py
+```
+
+目标是：
+
+```text
+train.csv / val.csv 不共享 lesion_id
+```
+
+重新生成：
+
+```bash
+python scripts/make_splits.py --config configs/resnet18.yaml --force
+```
+
+然后检查：
+
+```text
+train lesion_id ∩ val lesion_id = 0
+```
+
+再提交新的 `data/splits/train.csv` 和 `data/splits/val.csv`。
+
+---
+
+### 第四步：跑最小验证
+
+建议按这个顺序：
+
+```bash
+python scripts/dataprocess/validate_data.py
+python scripts/make_splits.py --config configs/resnet18.yaml --force
+python -m pytest -q
+python scripts/train_baseline.py --config configs/baseline_cnn.yaml
+```
+
+如果训练太慢，先把 config 里的 `epochs` 临时改成 1 做 smoke test。
+
+---
+
+## 9. 总体评价
+
+当前仓库状态我会评成：
+
+```text
+数据流程：      8/10
+迁移策略：      8/10
+工程结构：      7/10
+训练可运行性：  5/10
+实验科学性：    6/10
+报告可支撑度：  7/10
+```
+
+最重要的判断是：
+
+**你这次不是乱合并，main 的方向是正确的；但目前还不是可正式训练版本。**
+
+现在不要继续加新功能，先做一个"小修复提交"：
+
+```text
+fix model factory, gradcam target layer, and group-aware splits
+```
+
+修完这三个点后，项目就可以进入正式 DataLoader smoke test 和 baseline 训练阶段。
